@@ -1,6 +1,19 @@
 
-<h1>게시판</h1>
+<h1>BOARD</h1>
 
+<% if user_signed_in? %>
+  Logged in as <strong><%= current_user.email %></strong>.
+  <%= link_to 'My Posts', post_mypost_path(id:"#{Post.where('user_id':current_user.id).first}"), :class => 'navbar-link' %> |
+  <%= link_to 'Edit profile', edit_user_registration_path, :class => 'navbar-link' %> |
+  <%= link_to "Logout", destroy_user_session_path, method: :delete, :class => 'navbar-link'  %>
+  
+<% else %>
+  YOU SHOULD LOGIN TO UPLOAD IMAGES<br>
+  <%= link_to "Sign up", new_user_registration_path, :class => 'navbar-link'  %> |
+  <%= link_to "Login", new_user_session_path, :class => 'navbar-link'  %>
+<% end %>
+
+<% if user_signed_in? %>
 <div>
 <!--  <form method="post" action="/posts/create">
     <input type="text" name="title" placeholder="제목"/>
@@ -9,19 +22,20 @@
     <input type="submit" value="게시글 작성 완료!"><br>
   </form>-->
   
-  <%= form_tag({controller: :posts, action: :create}) do %>
-    <%= text_field_tag :title, nil, placeholder: "제목"%>
-    <%= text_field_tag :content, nil, placeholder: "내용"%>
-    <%= text_field_tag :hashtags,nil, placeholder: "해시태그(,로구분)"%>
-    <%= submit_tag '게시글 작성 완료!'%> 
+  <%= form_tag(post_create_path(id:current_user.id), method: "post", multipart:true) do %>
+    <%= text_field_tag :title, nil, placeholder: "TITLE"%>
+    <%= text_field_tag :content, nil, placeholder: "CONTENT"%>
+    <%= text_field_tag :hashtags,nil, placeholder: "HASHTAGS(,)"%>
+    <%= file_field_tag "pic", accept:"image/*" %>
+    <%= submit_tag 'SUBMIT!'%> 
   <% end %>
-<h3>해시태그로 검색해보쟈</h3>
+<h3>HASTAG SEARCH!(only one hashtag)</h3>
 <!--  <form method="post" action="/posts/find">
     <input type="text" name="find_hash" placeholder="찾고싶은해시태그"/>
      <input type="submit" value="검색!"><br>
   </form>-->
   
-  <%= form_tag({controller: :posts, action: :find}) do %>
+  <%= form_tag(post_find_path,method:"post") do %>
   
   <%= text_field_tag :find_hash  %>
   <%= submit_tag '검색!' %>
@@ -30,7 +44,7 @@
   
 </div>
 <div>
-  <h3>게시글들</h3>
+  <h3>POSTS</h3>
   <% @posts.each do |post| %>
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -43,6 +57,7 @@
         <!-- 게시글의 내용이 들어가는 부분 -->
         <%= post.content %> 
         
+        <%= image_tag post.img_url %>
         
         <font color="gray">
         <% post.hashtags.each do |onetag| %>
@@ -50,8 +65,11 @@
         <%end%>
         </font>
             <br />
-            <%=link_to '삭제',{controller: :posts, action: :destroy, id: post.id } %>
-           
+            <% if current_user.id == post.user_id %>
+              <%= link_to 'EDIT', post_edit_path(id: post.id),method:"get" %> 
+              <%=link_to 'DELETE',post_destroy_path(id: post.id), method: "get"  %>
+               
+             <% end %> 
            <!-- <a href="/posts/destroy/<%= post.id %>">삭제</a>-->
     
 
@@ -61,9 +79,10 @@
               <input type="submit" value="댓글달기!">
             </form>-->
             
-            <%= form_tag({controller: :comments, action: :create, post_id: post.id}) do %>
+            
+            <%= form_tag(comment_create_path(post_id: post.id),method:"post") do %>
               <%= text_field_tag :content %>
-              <%= submit_tag '댓글달기!'%>
+              <%= submit_tag 'COMMENT!'%>
             <% end %>
             
             <br />
@@ -75,10 +94,9 @@
                    
                    <!-- <a href="/posts/<%= post.id %>/comments/destroy/<%= comment.id %>"><button>삭제</button></a>
                    -->
-                    <%= link_to '삭제', [comment.post, comment],
-                     :method => :delete,
-                     data: { confirm: 'Are you sure?' }
-                    %>
+                    <% if current_user.id == post.user_id %>
+                      <%= link_to 'DELETE',comment_destroy_path(post_id: post.id, id:comment.id)%>
+                    <% end %>
                     </li>
                   <% end %>
               </div>
@@ -86,3 +104,5 @@
     </div>
   <% end %>
 </div>
+
+<% end %>

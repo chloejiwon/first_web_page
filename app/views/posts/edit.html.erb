@@ -1,0 +1,10 @@
+<h1>EDIT</h1> 
+
+
+<%= form_tag(post_update_path(id:@post.id), method: "post", multipart:true) do %>
+    <%= text_field_tag :title, "#{@post.title}", placeholder: "TITLE"%>
+    <%= text_field_tag :content, "#{@post.content}", placeholder: "CONTENT"%>
+    <%= text_field_tag :hashtags,nil, placeholder: "HASHTAGS(,)"%>
+    <%= file_field_tag "pic", accept:"image/*" %>
+    <%= submit_tag 'SUBMIT!'%> 
+<% end %>

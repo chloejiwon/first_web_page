@@ -1,5 +1,15 @@
-<h3>해시태그로 찾은거</h3>
+
+<h1>My Posts</h1>
+<h3>You can edit or delete your posts</h3>
+
+<% if user_signed_in? %>
 <div>
+    <%= link_to "Back To Lists", root_path %>
+</div>
+
+
+<div>
+  <h3>My POSTS</h3>
   <% @posts.each do |post| %>
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -10,27 +20,34 @@
       </div>
       <div class="panel-body">
         <!-- 게시글의 내용이 들어가는 부분 -->
-        <%= post.content %>
+        <%= post.content %> 
+        <%= image_tag post.img_url %>
+        
         <font color="gray">
         <% post.hashtags.each do |onetag| %>
           <%=onetag.name%>
         <%end%>
         </font>
             <br />
-             <%=link_to '삭제',post_destroy_path(id: post.id), method: "get"  %>
-           
+            <% if current_user.id == post.user_id %>
+              <%= link_to 'EDIT', post_edit_path(id: post.id),method:"get" %> 
+              <%=link_to 'DELETE',post_destroy_path(id: post.id), method: "get"  %>
+               
+             <% end %> 
+           <!-- <a href="/posts/destroy/<%= post.id %>">삭제</a>-->
+    
 
             <!-- 댓글다는 창이 있는 부분 -->
-           <!-- <form action="/posts/<%= post.id %>/comments/create" method="post">
+        <!--    <form action="/posts/<%= post.id %>/comments/create" method="post">
               <input type="text" name="content">
               <input type="submit" value="댓글달기!">
             </form>-->
             
-             <%= form_tag(comment_create_path(post_id: post.id),method:"post") do %>
-              <%= text_field_tag :content %>
-              <%= submit_tag '댓글달기!'%>
-            <% end %>
             
+            <%= form_tag(comment_create_path(post_id: post.id),method:"post") do %>
+              <%= text_field_tag :content %>
+              <%= submit_tag 'COMMENT!'%>
+            <% end %>
             
             <br />
               <div>
@@ -38,10 +55,12 @@
                 <ul class="list-group">
                   <% post.comments.each do |comment| %>
                     <li class="list-group-item"><%= comment.content %>
+                   
                    <!-- <a href="/posts/<%= post.id %>/comments/destroy/<%= comment.id %>"><button>삭제</button></a>
-                    -->
-                     <%= link_to '삭제',comment_destroy_path(post_id: post.id, id:comment.id)%>
-                  
+                   -->
+                    <% if current_user.id == post.user_id %>
+                      <%= link_to 'DELETE',comment_destroy_path(post_id: post.id, id:comment.id)%>
+                    <% end %>
                     </li>
                   <% end %>
               </div>
@@ -49,3 +68,5 @@
     </div>
   <% end %>
 </div>
+
+<% end %>
