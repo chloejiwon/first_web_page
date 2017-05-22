@@ -38,7 +38,7 @@
   <%= form_tag(post_find_path,method:"post") do %>
   
   <%= text_field_tag :find_hash  %>
-  <%= submit_tag '검색!' %>
+  <%= submit_tag 'Search!' %>
   
   <% end %>
   
@@ -55,9 +55,10 @@
       </div>
       <div class="panel-body">
         <!-- 게시글의 내용이 들어가는 부분 -->
-        <%= post.content %> 
+        <%= image_tag post.img_url %><br>
+        <%= post.content %> <br>
         
-        <%= image_tag post.img_url %>
+        
         
         <font color="gray">
         <% post.hashtags.each do |onetag| %>
